@@ -48,12 +48,12 @@ function create_csv_result_file {
             probationStartTimestamp=$(echo $line | sed --regexp-extended 's/[A-Za-z\ \-]//g')
         elif $(echo $line | grep --quiet --regexp 'loss')
         then
-            lostPackets=$(echo $line | cut --delimiter ',' --fields 3 | sed --regexp-extended 's/[A-Za-z\ ]//g')
-            if [ $(echo "$lostPackets-$IGNORED_LOSS>0" | bc) -eq 1 ] && [ "$linkStatus" != 'Failure' ]
+            lostPackets=$(echo $line | cut --delimiter ',' --fields 3 | sed --regexp-extended 's/[A-Za-z\ %]//g')
+            if [ $(echo "$lostPackets-${IGNORED_LOSS}>0" | bc) -eq 1 ] && [ "$linkStatus" != 'Failure' ]
             then
                 linkStatus='Failure'
                 lineToRecord=$(date +%F','%T -d @$probationStartTimestamp)','$linkStatus
-            elif [ $(echo "$lostPackets-$IGNORED_LOSS<=0" | bc) -eq 1 ] && [ "$linkStatus" != 'OK' ]
+            elif [ $(echo "$lostPackets-${IGNORED_LOSS}<=0" | bc) -eq 1 ] && [ "$linkStatus" != 'OK' ]
             then
                 linkStatus='OK'
                 lineToRecord=$(date +%F','%T -d @$probationStartTimestamp)','$linkStatus
